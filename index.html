@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commonplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f7f5f0;min-height:100vh}
+#app{max-width:860px;margin:0 auto;padding:1rem 1rem 4rem}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.7}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dot{0%,80%,100%{transform:scale(0);opacity:0}40%{transform:scale(1);opacity:1}}
+@keyframes glow{0%,100%{opacity:.65}50%{opacity:1}}
+.hero{background:#0f0c24;border-radius:14px;overflow:hidden;position:relative;margin-bottom:12px}
+.hero-glow{position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:560px;height:300px;background:radial-gradient(ellipse,rgba(83,74,183,.32) 0%,transparent 68%);pointer-events:none}
+.hero-star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s ease-in-out infinite}
+.hero-topbar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:1rem 1.75rem 0}
+.hero-byline{display:flex;align-items:center;gap:7px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#534AB7;font-weight:500}
+.hero-engine{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#3C3489}
+.hero-centre{position:relative;z-index:1;text-align:center;padding:1.75rem 2rem .5rem}
+.hero-orb{width:76px;height:76px;margin:0 auto 1.25rem;animation:float 5s ease-in-out infinite}
+.hero-name{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2.8rem,9vw,5.2rem);font-weight:600;color:#e8e4ff;letter-spacing:-.01em;line-height:1;margin:0 0 .55rem}
+.hero-rule{width:44px;height:1.5px;background:linear-gradient(90deg,transparent,#c4973a,transparent);margin:.75rem auto}
+.hero-tagline{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1rem,2.6vw,1.25rem);font-style:italic;color:#9d97d4;line-height:1.6;max-width:500px;margin:0 auto}
+.hero-gold{color:#c4973a;font-style:normal}
+.hero-traditions{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1.25rem;padding:1.1rem 2rem 1rem}
+.hero-trad{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#534AB7;display:flex;align-items:center;gap:6px}
+.hero-dot{width:3px;height:3px;border-radius:50%;background:#3C3489;display:inline-block}
+.super-strip{position:relative;z-index:1;margin:0 1.25rem 1.25rem;background:rgba(196,151,58,.1);border:1px solid rgba(196,151,58,.22);border-radius:8px;padding:9px 13px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:10px;transition:background .15s}
+.super-strip:hover{background:rgba(196,151,58,.18)}
+.super-pill{background:#c4973a;color:#1a0e00;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.super-strip-text{display:flex;align-items:center;gap:8px;font-size:11px;color:#e8c97a}
+.super-cta{font-size:10px;color:#e8c97a;white-space:nowrap;animation:glow 2s ease-in-out infinite}
+.input-card{background:#fff;border:0.5px solid #e2ddd4;border-radius:12px;padding:1.1rem;margin-bottom:10px}
+.input-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.input-label{font-size:13px;font-weight:500;color:#0e0b1f}
+.input-count{font-size:11px;color:#9b9080}
+.input-ta{width:100%;min-height:84px;font-family:'DM Sans',sans-serif;font-size:13px;color:#0e0b1f;background:#f7f5f0;border:0.5px solid #cdc6b5;border-radius:8px;padding:10px 12px;resize:vertical;line-height:1.65;outline:none;transition:border-color .15s;display:block}
+.input-ta:focus{border-color:#534AB7;background:#fff}
+.input-foot{display:flex;justify-content:flex-end;margin-top:4px}
+.clear-btn{font-size:11px;color:#9b9080;background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.tabs{display:flex;background:#f0ede6;border:0.5px solid #e2ddd4;border-radius:9px;padding:3px;gap:3px;margin-bottom:8px}
+.tab{flex:1;padding:7px 6px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:#7a748f;background:transparent;border:none;border-radius:6px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.tab:hover{color:#3d3857}
+.tab.active{background:#fff;color:#0e0b1f;border:0.5px solid #e2ddd4;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tab.pop-tab.active{background:#D85A30;color:#fff;border-color:#993C1D}
+.channel-slot{border:1px dashed #cdc6b5;border-radius:8px;padding:7px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .15s}
+.channel-slot:hover{border-color:#D85A30;background:#faede8}
+.channel-slot-left{font-size:10px;color:#7a748f;display:flex;align-items:center;gap:5px}
+.channel-slot-name{color:#3d3857;font-weight:500}
+.for-sale{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;background:#D85A30;color:#fff;padding:2px 7px;border-radius:20px;animation:glow 2s ease-in-out infinite}
+.sponsor-bar{background:#EEEDFE;border:0.5px solid #c4c0ee;border-radius:8px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:11px;color:#4a3fa8}
+.sponsor-dismiss{font-size:10px;color:#9d97d4;background:none;border:0.5px solid #c4c0ee;border-radius:10px;padding:1px 7px;cursor:pointer}
+.subhead{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:#9b9080;margin:12px 0 6px;display:flex;align-items:center;gap:8px}
+.subhead-rule{flex:1;height:.5px;background:#e2ddd4;display:block}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px;margin-bottom:3px}
+.vcard{background:#fff;border:0.5px solid #e2ddd4;border-radius:10px;padding:9px 8px 8px;cursor:pointer;text-align:left;display:flex;flex-direction:column;transition:all .15s;font-family:'DM Sans',sans-serif}
+.vcard:hover{border-color:#cdc6b5;background:#f7f5f0}
+.vcard.active-phil{border-color:#534AB7;background:#EEEDFE}
+.vcard.active-pop{border-color:#D85A30;background:#FAECE7}
+.vcard-top{display:flex;align-items:flex-start;gap:5px;margin-bottom:2px}
+.vcard-icon{font-size:16px;line-height:1;flex-shrink:0}
+.vcard-name{font-size:12px;font-weight:500;color:#0e0b1f;line-height:1.2}
+.vcard.active-phil .vcard-name{color:#26215C}
+.vcard.active-pop .vcard-name{color:#4A1B0C}
+.vcard-concept{font-size:9.5px;color:#7a748f;margin-bottom:4px;line-height:1.35}
+.vcard-quote{font-size:9px;color:#9b9080;font-style:italic;line-height:1.4;border-top:0.5px solid #e2ddd4;padding-top:4px;margin-top:auto}
+.vcard.active-phil .vcard-quote{color:#534AB7}
+.vcard.active-pop .vcard-quote{color:#993C1D}
+.response{margin-top:14px;animation:rise .3s ease}
+.resp-card{background:#fff;border:0.5px solid #e2ddd4;border-radius:12px;overflow:hidden}
+.resp-head{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:0.5px solid #e2ddd4}
+.resp-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.resp-name{font-size:14px;font-weight:500;margin:0 0 2px}
+.resp-concept{font-size:11px;margin:0}
+.resp-body{padding:14px}
+.resp-main{font-size:13.5px;color:#3d3857;line-height:1.85;margin:0 0 12px}
+.resp-pullquote{font-style:italic;font-size:13px;line-height:1.7;padding:9px 12px;border-left:2px solid #534AB7;border-radius:0 8px 8px 0;margin:0}
+.resp-thinking{padding:14px;display:flex;align-items:center;gap:10px;color:#9b9080;font-size:13px}
+.dot{width:5px;height:5px;border-radius:50%;background:#534AB7;animation:dot 1.4s ease-in-out infinite both}
+.resp-error{padding:14px}
+.retry-btn{font-size:12px;padding:6px 14px;border-radius:20px;border:0.5px solid #cdc6b5;background:transparent;color:#3d3857;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif}
+.exit{background:#f7f5f0;border:0.5px solid #e2ddd4;border-radius:12px;padding:12px 14px;margin-top:8px;animation:rise .35s ease}
+.exit-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:#9b9080;margin-bottom:8px}
+.exit-btns{display:flex;flex-wrap:wrap;gap:6px}
+.exit-btn{padding:6px 13px;font-size:11.5px;font-weight:500;border-radius:20px;border:0.5px solid #cdc6b5;background:#fff;color:#0e0b1f;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.exit-btn:hover{border-color:#9b9080}
+.exit-btn.pop-exit{background:#D85A30;color:#fff;border-color:#993C1D}
+.meme{background:#0f0c24;border-radius:12px;padding:1.25rem 1.5rem;margin-top:8px;text-align:center;animation:rise .3s ease}
+.meme-ey{font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#7F77DD;margin:0 0 8px}
+.meme-emoji{font-size:1.8rem;display:block;margin:4px 0}
+.meme-who{font-size:12px;color:#9d97d4;margin:0 0 8px}
+.meme-quote{font-size:13px;font-style:italic;color:#e8e4ff;line-height:1.65;margin:0 0 8px;padding:0 1rem}
+.meme-tags{font-size:10px;color:#534AB7;margin:0 0 12px}
+.meme-toast{background:#534AB7;color:#e8e4ff;font-size:11px;padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:10px;animation:rise .2s ease}
+.meme-actions{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.meme-btn-primary{padding:7px 16px;font-size:12px;font-weight:500;border-radius:20px;border:none;background:#534AB7;color:#e8e4ff;cursor:pointer;font-family:'DM Sans',sans-serif}
+.meme-btn{padding:7px 16px;font-size:12px;border-radius:20px;border:0.5px solid #534AB7;background:transparent;color:#9d97d4;cursor:pointer;font-family:'DM Sans',sans-serif}
+.feedback-card{background:#fff;border:0.5px solid #e2ddd4;border-radius:12px;padding:1.1rem;margin-top:2.5rem}
+.feedback-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.feedback-label{font-size:13px;font-weight:500;color:#0e0b1f}
+.feedback-meta{font-size:11px;color:#9b9080;margin-left:auto;font-style:italic}
+.feedback-ta{width:100%;min-height:80px;font-family:'DM Sans',sans-serif;font-size:13px;color:#0e0b1f;background:#f7f5f0;border:0.5px solid #cdc6b5;border-radius:8px;padding:10px 12px;resize:vertical;line-height:1.65;outline:none;display:block}
+.feedback-foot{display:flex;justify-content:flex-end;margin-top:8px}
+.feedback-submit{padding:7px 20px;font-size:12px;font-weight:500;border-radius:20px;border:none;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.feedback-done{text-align:center;padding:1rem 0}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:1.25rem;z-index:1000}
+.modal-box{background:#fff;border-radius:14px;border:0.5px solid #e2ddd4;padding:1.75rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
+.modal-wm{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#9b9080;margin-bottom:10px}
+.modal-h{font-size:16px;font-weight:500;color:#0e0b1f;margin:0 0 4px}
+.modal-sub{font-size:12px;color:#7a748f;margin:0 0 16px;line-height:1.6}
+.modal-field{margin-bottom:10px}
+.modal-field label{display:block;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:#9b9080;margin-bottom:3px}
+.modal-field input,.modal-field textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px;border-radius:7px;border:0.5px solid #cdc6b5;background:#f7f5f0;outline:none;color:#0e0b1f}
+.modal-field textarea{min-height:60px;resize:vertical}
+.modal-btns{display:flex;gap:8px;margin-top:14px}
+.modal-cancel{flex:1;padding:.65rem;font-family:'DM Sans',sans-serif;font-size:13px;border-radius:8px;border:0.5px solid #cdc6b5;background:transparent;cursor:pointer;color:#7a748f}
+.modal-submit{flex:2;padding:.65rem;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;border-radius:8px;border:none;color:#fff;cursor:pointer}
+.modal-success{text-align:center;padding:1.5rem 0}
+.footer{text-align:center;font-size:11px;color:#cdc6b5;margin-top:1.5rem}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HERO: static, never re-rendered -->
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-star" style="width:2px;height:2px;top:10%;left:7%;animation-delay:0s"></div>
+    <div class="hero-star" style="width:3px;height:3px;top:18%;left:85%;animation-delay:.5s"></div>
+    <div class="hero-star" style="width:1px;height:1px;top:58%;left:13%;animation-delay:1s"></div>
+    <div class="hero-star" style="width:2px;height:2px;top:75%;left:91%;animation-delay:.3s"></div>
+    <div class="hero-star" style="width:2px;height:2px;top:38%;left:96%;animation-delay:1.4s"></div>
+    <div class="hero-star" style="width:1px;height:1px;top:85%;left:52%;animation-delay:.8s"></div>
+    <div class="hero-topbar">
+      <div class="hero-byline">
+        <svg viewBox="0 0 20 20" fill="none" width="13" height="13">
+          <circle cx="10" cy="10" r="9" stroke="#534AB7" stroke-width="1"/>
+          <circle cx="10" cy="5" r="1.5" fill="#c4973a"/>
+          <circle cx="15.3" cy="12.5" r="1.5" fill="#9d97d4"/>
+          <circle cx="4.7" cy="12.5" r="1.5" fill="#9d97d4"/>
+          <line x1="10" y1="6.5" x2="14.5" y2="11.5" stroke="#c4973a" stroke-width=".7"/>
+          <line x1="10" y1="6.5" x2="5.5" y2="11.5" stroke="#c4973a" stroke-width=".7"/>
+          <line x1="14.5" y1="12.5" x2="5.5" y2="12.5" stroke="#7F77DD" stroke-width=".7"/>
+        </svg>
+        by MGMS
+      </div>
+      <span class="hero-engine">The wisdom engine</span>
+    </div>
+    <div class="hero-centre">
+      <div class="hero-orb">
+        <svg viewBox="0 0 76 76" fill="none" width="76" height="76">
+          <circle cx="38" cy="38" r="36" fill="#1e1650" stroke="#534AB7" stroke-width="1.2"/>
+          <circle cx="38" cy="38" r="24" fill="none" stroke="#3C3489" stroke-width=".75" stroke-dasharray="4 4"/>
+          <circle cx="38" cy="38" r="13" fill="none" stroke="#534AB7" stroke-width=".4" stroke-dasharray="2 3"/>
+          <circle cx="38" cy="19" r="3.8" fill="#c4973a"/>
+          <circle cx="56" cy="50" r="3.8" fill="#9d97d4"/>
+          <circle cx="20" cy="50" r="3.8" fill="#9d97d4"/>
+          <line x1="38" y1="22.8" x2="54.5" y2="47.5" stroke="#c4973a" stroke-width=".85"/>
+          <line x1="38" y1="22.8" x2="21.5" y2="47.5" stroke="#c4973a" stroke-width=".85"/>
+          <line x1="54.5" y1="50" x2="21.5" y2="50" stroke="#7F77DD" stroke-width=".85"/>
+          <circle cx="38" cy="38" r="5.5" fill="#534AB7"/>
+          <circle cx="38" cy="38" r="2.75" fill="#c4973a"/>
+        </svg>
+      </div>
+      <h1 class="hero-name">Commonplace</h1>
+      <div class="hero-rule"></div>
+      <p class="hero-tagline">
+        Every expression carries hidden meaning.<br>
+        <span class="hero-gold">See what the great minds make of it.</span>
+      </p>
+    </div>
+    <div class="hero-traditions">
+      <span class="hero-trad">Philosophy</span>
+      <span class="hero-trad"><span class="hero-dot"></span>Sacred traditions</span>
+      <span class="hero-trad"><span class="hero-dot"></span>Human sciences</span>
+      <span class="hero-trad"><span class="hero-dot"></span>Pop culture</span>
+    </div>
+    <div class="super-strip" id="super-strip">
+      <div class="super-strip-text">
+        <span class="super-pill">presenting partner</span>
+        1 Exclusive Spot Available. Commonplace Presenting Partnership.
+      </div>
+      <span class="super-cta">🏷 Inquire</span>
+    </div>
+  </div>
+
+  <!-- INPUT: static shell, textarea value managed directly -->
+  <div class="input-card">
+    <div class="input-top">
+      <span class="input-label">Your conversation or thought</span>
+      <span class="input-count" id="char-count">0 characters</span>
+    </div>
+    <textarea id="convo-ta" class="input-ta"
+      placeholder="Paste a conversation, describe what happened, or share what's on your mind. One sentence or an entire thread — the oracle works with anything."></textarea>
+    <div class="input-foot">
+      <button class="clear-btn" id="clear-btn">clear</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs" id="tabs"></div>
+
+  <!-- CHANNEL SLOT -->
+  <div class="channel-slot" id="channel-slot">
+    <span class="channel-slot-left">🏷 <span id="channel-slot-name" class="channel-slot-name"></span><span id="channel-slot-label"> Presenting Partnership Available</span></span>
+    <span class="for-sale">For Sale</span>
+  </div>
+
+  <!-- SPONSOR BAR -->
+  <div id="sponsor-bar-wrap"></div>
+
+  <!-- VOICES -->
+  <div id="voices-panel"></div>
+
+  <!-- RESPONSE -->
+  <div id="response-panel"></div>
+
+  <!-- HINT -->
+  <p id="hint-text" style="text-align:center;padding:1.25rem;font-size:12px;color:#9b9080;font-style:italic">
+    Choose a lens above — or paste your conversation first for a personalised read
+  </p>
+
+  <!-- FEEDBACK -->
+  <div class="feedback-card">
+    <div class="feedback-head">
+      <span style="font-size:16px">💬</span>
+      <span class="feedback-label">Share your thoughts</span>
+      <span class="feedback-meta">Read by the team at MGMS</span>
+    </div>
+    <div id="feedback-inner">
+      <textarea id="feedback-ta" class="feedback-ta"
+        placeholder="What's working? What's missing? Which voice surprised you most? Be as blunt as Foucault or as warm as Rogers — we can take it."></textarea>
+      <div class="feedback-foot">
+        <button id="feedback-submit" class="feedback-submit" style="background:#cdc6b5">Send feedback</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer">Commonplace by MGMS</p>
+
+  <!-- MODAL -->
+  <div id="modal-wrap"></div>
+
+</div><!-- #app -->
+
+<script>
+// ── API KEY ──────────────────────────────────────────────────────────────
+// For secure deployment via Cloudflare Workers, replace this URL with your
+// Worker endpoint (e.g. https://commonplace.yourname.workers.dev)
+// and remove the API_KEY constant entirely.
+// For direct demo use, paste your Anthropic key below:
+const API_KEY    = "PASTE_YOUR_API_KEY_HERE";
+const API_URL    = "https://api.anthropic.com/v1/messages"; // swap for CF Worker URL
+const USE_WORKER = false; // set true when using Cloudflare Worker
+
+// ── CHANNEL CONFIG ───────────────────────────────────────────────────────
+const CHANNELS = {
+  philosophy: { name:"The School of Athens",  desc:"Exclusive presenting partner of the philosophy tradition. 50,000 monthly users, 95% completion rate. 6-month term with guaranteed minimum impressions." },
+  sacred:     { name:"The Sacred Grove",       desc:"Exclusive presenting partner of the sacred traditions. 50,000 monthly users, 95% completion rate. 6-month term with guaranteed minimum impressions." },
+  sciences:   { name:"The Laboratory",         desc:"Exclusive presenting partner of the human sciences. 50,000 monthly users, 95% completion rate. 6-month term with guaranteed minimum impressions." },
+  pop:        { name:"The Cultural Moment",    desc:"Exclusive presenting partner of the pop culture experience. 50,000 monthly users, 95% completion rate. 6-month term with guaranteed minimum impressions." },
+};
+
+// Sponsors hidden by default — toggle on:true to activate
+const SPONSORS = {
+  philosophy: { on:false, name:"Penguin Classics", tag:"all the wisdom, none of the eyestrain" },
+  sacred:     { on:false, name:"Headspace",        tag:"your mind called. it needs a minute" },
+  sciences:   { on:false, name:"Coursera",         tag:"the examined life, now with a certificate" },
+  pop:        { on:false, name:"Spotify",           tag:"your intellectual journey deserves a playlist" },
+};
+
+// ── VOICE DATA ───────────────────────────────────────────────────────────
+const VOICES = {
+  philosophy:[
+    {k:"socrates",  i:"🏛️",n:"Socrates",      c:"Dialectic & maieutics",             q:'"I know nothing — shall we begin?"',                           bg:"#E1F5EE",bd:"#0F6E56",tx:"#04342C",ac:"#085041",sys:"You are Socrates — curious, gently ironic, never claiming to know. You draw truth out through questions, never declarations. End with a genuine question you would actually ask. First person, fully in character."},
+    {k:"plato",     i:"🌌",n:"Plato",          c:"Forms, the cave & recollection",    q:'"Those shadows on the wall? That\'s you."',                   bg:"#EEEDFE",bd:"#534AB7",tx:"#26215C",ac:"#3C3489",sys:"You are Plato — author of the Republic and Symposium. You see the tension between appearance and reality, opinion and knowledge. Intellectual authority, never condescension. In character."},
+    {k:"descartes", i:"🪞",n:"Descartes",      c:"I think, therefore I am",           q:'"Before we proceed — are you sure you exist?"',                bg:"#E6F1FB",bd:"#185FA5",tx:"#042C53",ac:"#0C447C",sys:"You are René Descartes — committed to radical doubt as the path to certainty. Cogito ergo sum is your foundation. What here can we be absolutely certain of, and what must be doubted? Formal but accessible. In character."},
+    {k:"emerson",   i:"🌿",n:"Emerson",        c:"Self-reliance & the Over-Soul",     q:'"Trust thyself. Every heart vibrates to that iron string."',   bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",sys:"You are Ralph Waldo Emerson — poet, essayist, Transcendentalist. You believe in the divine spark within every individual and above all in self-reliance. Luminous, aphoristic prose. In character."},
+    {k:"hegel",     i:"🌀",n:"Hegel",          c:"Dialectical becoming & Geist",      q:'"Your contradiction is just Spirit doing its thing."',         bg:"#FAECE7",bd:"#993C1D",tx:"#4A1B0C",ac:"#712B13",sys:"You are Hegel — all thought is Geist coming to know itself through contradiction and synthesis. What thesis meets antithesis here, and what synthesis is emerging? Grand, sweeping, dialectical. In character."},
+    {k:"kant",      i:"⌛",n:"Kant",            c:"Limits of knowledge & duty",        q:'"You can\'t know the thing. Just the vibe of the thing."',    bg:"#EEEDFE",bd:"#534AB7",tx:"#26215C",ac:"#3C3489",sys:"You are Immanuel Kant — precise, systematic. What can we actually know here? What are we merely assuming? What does the categorical imperative demand? In character."},
+    {k:"aristotle", i:"🔭",n:"Aristotle",      c:"Telos, virtue & actuality",         q:'"Every acorn has a destiny. What\'s yours?"',                 bg:"#FAEEDA",bd:"#854F0B",tx:"#412402",ac:"#633806",sys:"You are Aristotle — empirical, systematic. Every being has a nature and telos. What virtues are at play? What is this trying to become? Calm authority. In character."},
+    {k:"buber",     i:"🤝",n:"Buber",          c:"I-Thou vs I-It",                    q:'"Are you using me, or actually meeting me?"',                 bg:"#FBEAF0",bd:"#993556",tx:"#4B1528",ac:"#72243E",sys:"You are Martin Buber — the divine is found in genuine I-Thou encounter. Is genuine meeting happening here, or merely utility? Warm, relational, deep. In character."},
+    {k:"merleau",   i:"🪴",n:"Merleau-Ponty", c:"The lived body & perception",       q:'"Your brain didn\'t think that. Your whole body did."',        bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",sys:"You are Merleau-Ponty — thought and perception live in the whole lived body. What does this exchange reveal about embodied experience? Phenomenological precision. In character."},
+    {k:"haraway",   i:"🧬",n:"Haraway",        c:"Cyborg boundaries & kinship",       q:'"Half-human, half-machine. Welcome to the club."',            bg:"#F1EFE8",bd:"#5F5E5A",tx:"#2C2C2A",ac:"#444441",sys:"You are Donna Haraway — playfully subversive about human-machine boundaries. This human-AI exchange is a living Cyborg Manifesto. Embrace the boundary confusion with wit. In character."},
+    {k:"twain",     i:"🎩",n:"Mark Twain",     c:"Wit, truth & American irreverence", q:'"Truth is stranger than fiction. Fiction has to make sense."',bg:"#FAEEDA",bd:"#854F0B",tx:"#412402",ac:"#633806",sys:"You are Mark Twain — America's great satirist and moral wit. You see through pretension with a raised eyebrow and a turned phrase. Dry, aphoristic. In character."},
+    {k:"yogi",      i:"⚾",n:"Yogi Berra",     c:"Accidental profundity",             q:'"When you come to a fork in the road, take it."',             bg:"#E6F1FB",bd:"#185FA5",tx:"#042C53",ac:"#0C447C",sys:"You are Yogi Berra — Hall of Fame catcher, accidental philosopher. Slightly paradoxical, completely sincere, unexpectedly illuminating plain baseball wisdom. In character."},
+    {k:"forrest",   i:"🍫",n:"Forrest Gump",   c:"Simple truth & unexpected wisdom",  q:'"Life is like a box of chocolates. And so is this."',         bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",sys:"You are Forrest Gump — simple, sincere, stumbling onto profound truth without meaning to. You find the straightforward human truth the complicated people miss. Never ironic. Always kind. In character."},
+  ],
+  sacred:[
+    {k:"buddhism",   i:"☸️",n:"Buddhism",            c:"Interbeing & non-self",               q:'"Who is the one asking the question?"',                              bg:"#FAEEDA",bd:"#854F0B",tx:"#412402",ac:"#633806",sys:"You speak from Buddhist wisdom — gentle, compassionate, non-dogmatic. You see the arising and passing of phenomena. You point, never preach. End with an invitation."},
+    {k:"taoism",     i:"☯️",n:"Taoism",              c:"Wu wei, paradox & the Way",           q:'"Stop trying. That\'s the whole point."',                            bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",sys:"You speak from Tao Te Ching and Zhuangzi wisdom — paradoxical, spacious. The tension between forcing and flowing. Few words carrying the weight of emptiness."},
+    {k:"catholic",   i:"✝️",n:"Catholic tradition",  c:"Grace, sacrament & the common good", q:'"God writes straight with crooked lines."',                          bg:"#E6F1FB",bd:"#185FA5",tx:"#042C53",ac:"#0C447C",sys:"You speak from the Roman Catholic intellectual tradition — Augustine, Aquinas, the sacramental worldview that finds grace in the material world. Warm, capacious. Non-dogmatic in tone."},
+    {k:"orthodox",   i:"☦️",n:"Orthodox Christianity",c:"Theosis, icon & the living tradition",q:'"We are not trying to go to heaven. We are becoming heaven."',    bg:"#EEEDFE",bd:"#534AB7",tx:"#26215C",ac:"#3C3489",sys:"You speak from Eastern Orthodox Christianity — the Desert Fathers, theosis, Gregory Palamas. Salvation is transformation. You see icons and beauty as windows into eternity. Deep, mysterious, warm."},
+    {k:"stoicism",   i:"🗿",n:"Stoicism",             c:"What is and is not in our power",    q:'"Is it in your control? No? Then move on."',                        bg:"#F1EFE8",bd:"#5F5E5A",tx:"#2C2C2A",ac:"#444441",sys:"You speak from the Stoic tradition — Marcus Aurelius, Epictetus, Seneca. What can and cannot be controlled? What does virtue demand? Practical, direct, never preachy."},
+    {k:"sufism",     i:"🌟",n:"Sufism",               c:"Divine longing & the heart's way",   q:'"Every conversation is a love letter in disguise."',                bg:"#FBEAF0",bd:"#993556",tx:"#4B1528",ac:"#72243E",sys:"You speak from the Sufi tradition — Rumi, Hafiz, Ibn Arabi. Everything is metaphor; every connection a trace of the Divine Beloved. Poetic depth and real mystic feeling."},
+    {k:"hindu",      i:"🕊️",n:"Vedanta",              c:"Atman, Brahman & non-duality",       q:'"You are not reading this. You are this."',                         bg:"#EEEDFE",bd:"#534AB7",tx:"#26215C",ac:"#3C3489",sys:"You speak from Advaita Vedanta — the Upanishads, non-duality. Consciousness is the ground of all experience. The separation between self and world is maya. Serene clarity."},
+    {k:"quaker",     i:"🕯️",n:"Quaker",               c:"Inner light & gathered silence",      q:'"Sit down. Be quiet. It\'s already there."',                       bg:"#F1EFE8",bd:"#5F5E5A",tx:"#2C2C2A",ac:"#444441",sys:"You speak from the Quaker tradition — simple, direct, without ceremony. There is that of God in every person. Truth found in stillness. No more words than needed."},
+    {k:"zoroastrian",i:"🔥",n:"Zoroastrianism",       c:"Truth, light & the cosmic choice",   q:'"Good thoughts. Good words. Good deeds. In that order."',           bg:"#FAEEDA",bd:"#BA7517",tx:"#412402",ac:"#633806",sys:"You speak from the Zoroastrian tradition. The fundamental cosmic choice between Asha (truth, order) and Druj (falsehood, chaos). Every thought, word, and deed either increases the light or the darkness."},
+    {k:"bahai",      i:"🌸",n:"Baháʼí Faith",         c:"Unity, progress & oneness",          q:'"The earth is but one country and mankind its citizens."',          bg:"#FBEAF0",bd:"#993556",tx:"#4B1528",ac:"#72243E",sys:"You speak from the Baháʼí Faith — the oneness of God, religion, and humanity. Science and religion are complementary. Humanity is moving toward a world civilization of peace and justice. Warm and non-dogmatic."},
+    {k:"indigenous", i:"🌍",n:"Indigenous wisdom",    c:"All our relations & sacred kinship", q:'"The tree you ignored said hi this morning."',                      bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",sys:"You speak from indigenous wisdom — interconnectedness of all beings, wisdom of ancestors, sacredness of relationship. All things are related, all beings have standing. Reverent and grounded."},
+    {k:"kabbalah",   i:"✡️",n:"Kabbalah",             c:"Ein Sof, Sefirot & hidden sparks",   q:'"There are ten layers here. You found layer one."',                 bg:"#EEEDFE",bd:"#534AB7",tx:"#26215C",ac:"#3C3489",sys:"You speak from the Kabbalistic tradition — the Zohar, the Sefirot. Divine sparks moving through the vessels of creation. Find the hidden structure beneath the surface. Mystical but illuminating."},
+  ],
+  sciences:[
+    // Psychology
+    {k:"freud",       i:"🛋️",n:"Freud",         c:"The unconscious & drives",                q:'"This is about your mother. It\'s always your mother."',    bg:"#FAECE7",bd:"#993C1D",tx:"#4A1B0C",ac:"#712B13",grp:"Psychology",    sys:"You are Sigmund Freud — look beneath surface content to unconscious wishes, fears, and repressions. Clinical precision and dark wit. The full Freud: libido, death drive, transference. In character."},
+    {k:"jung",        i:"🌑",n:"Jung",            c:"Archetypes, shadow & individuation",      q:'"Your shadow just waved. Did you wave back?"',              bg:"#1a1035",bd:"#7F77DD",tx:"#e8e4ff",ac:"#AFA9EC",grp:"Psychology",    sys:"You are Carl Jung — archetypes at work: Shadow, Anima/Animus, Self, Persona. You think in symbols and myths. What does individuation demand here? Rich, symbolic, genuinely deep. In character."},
+    {k:"maslow",      i:"🔺",n:"Maslow",          c:"Hierarchy of needs & self-actualisation", q:'"Which level of the pyramid are we on?"',                  bg:"#FAEEDA",bd:"#854F0B",tx:"#412402",ac:"#633806",grp:"Psychology",    sys:"You are Abraham Maslow — what need is seeking expression? Deficiency or growth motivation? Is self-actualisation visible or blocked? Warm, constructive. In character."},
+    {k:"fromm",       i:"❤️",n:"Fromm",           c:"The art of loving & freedom",             q:'"Love is a skill. Most people skipped practice."',         bg:"#FBEAF0",bd:"#993556",tx:"#4B1528",ac:"#72243E",grp:"Psychology",    sys:"You are Erich Fromm — mature love versus needy dependency. Modern alienation. Draw on The Art of Loving and Escape from Freedom. Warm and critical. In character."},
+    {k:"rogers",      i:"🌱",n:"Rogers",          c:"Unconditional positive regard",           q:'"I accept you. All of you. Even that part."',              bg:"#E1F5EE",bd:"#0F6E56",tx:"#04342C",ac:"#085041",grp:"Psychology",    sys:"You are Carl Rogers — empathy, congruence, unconditional positive regard. Every person has an actualizing tendency that flourishes when genuinely accepted. Warm. In character."},
+    // Sociology
+    {k:"goffman",     i:"🎭",n:"Goffman",         c:"Self as performance & face-work",         q:'"Nice act. What happens backstage?"',                      bg:"#FAECE7",bd:"#993C1D",tx:"#4A1B0C",ac:"#712B13",grp:"Sociology",     sys:"You are Erving Goffman — all social exchange is theatrical: front stage, back stage, impression management. Sharp, observational, wry. In character."},
+    {k:"foucault",    i:"👁️",n:"Foucault",        c:"Power, knowledge & discourse",            q:'"Who decided this was normal? Follow the power."',        bg:"#1a1035",bd:"#7F77DD",tx:"#e8e4ff",ac:"#AFA9EC",grp:"Sociology",     sys:"You are Michel Foucault — not 'what is true?' but 'how did this come to count as true?' Trace power relations and regimes of truth. Incisive, destabilising, precise. In character."},
+    {k:"bourdieu",    i:"🎓",n:"Bourdieu",        c:"Capital, field & habitus",                q:'"You think that was a free choice. Adorable."',           bg:"#EEEDFE",bd:"#534AB7",tx:"#26215C",ac:"#3C3489",grp:"Sociology",     sys:"You are Pierre Bourdieu — reveal how free choice is structured by habitus and capital. Rigorous, revealing, slightly merciless. In character."},
+    // Anthropology
+    {k:"geertz",      i:"🔍",n:"Geertz",          c:"Thick description & webs of meaning",     q:'"Let me write 40 pages about what you just did."',        bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",grp:"Anthropology", sys:"You are Clifford Geertz — culture is the webs of significance humans spin. Treat this as a cultural text demanding careful, layered reading. In character."},
+    {k:"bateson",     i:"♾️",n:"Bateson",          c:"The pattern that connects",               q:'"What connects the crab, the lobster, and you?"',         bg:"#EEEDFE",bd:"#534AB7",tx:"#26215C",ac:"#3C3489",grp:"Anthropology", sys:"You are Gregory Bateson — what is the pattern that connects? Recursive loops and double binds. Mind distributed across organism-and-environment. In character."},
+    {k:"turner",      i:"🌉",n:"Turner",           c:"Liminality, ritual & communitas",         q:'"You\'re in the threshold. Don\'t rush it."',             bg:"#FAECE7",bd:"#993C1D",tx:"#4A1B0C",ac:"#712B13",grp:"Anthropology", sys:"You are Victor Turner — all transformation passes through liminality where normal structures dissolve. The bond formed there is communitas. What threshold are these people at? In character."},
+    // Hard science
+    {k:"einstein",    i:"💡",n:"Einstein",         c:"Relativity, wonder & moral imagination",  q:'"Imagination is more important than knowledge."',         bg:"#E6F1FB",bd:"#185FA5",tx:"#042C53",ac:"#0C447C",grp:"Hard science", sys:"You are Albert Einstein — physicist, humanist, pacifist. Your method is thought experiments and radical imagination. Beauty is a guide to truth. You cared deeply about ethics and human dignity. In character."},
+    {k:"newton",      i:"🍎",n:"Newton",           c:"Laws, order & the frame of nature",       q:'"If I have seen further, it is by standing on the shoulders of giants."',bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",grp:"Hard science", sys:"You are Isaac Newton — mathematician, physicist, theologian. The universe operates according to knowable laws; uncovering them is reading the mind of God. Methodical, precise, absolute commitment to truth. In character."},
+    {k:"pasteur",     i:"🔬",n:"Pasteur",          c:"Germ theory, proof & saving lives",       q:'"Chance favours the prepared mind."',                     bg:"#FAEEDA",bd:"#854F0B",tx:"#412402",ac:"#633806",grp:"Hard science", sys:"You are Louis Pasteur — chemist, microbiologist, tireless experimentalist. Observation, hypothesis, and rigorous testing are the path to truth. A man of deep faith who saw no contradiction between science and God. In character."},
+    {k:"turing",      i:"💻",n:"Turing",           c:"Mind, machine & what thinking means",     q:'"Can machines think? Can people?"',                       bg:"#EEEDFE",bd:"#534AB7",tx:"#26215C",ac:"#3C3489",grp:"Hard science", sys:"You are Alan Turing — mathematician, logician, father of computer science and AI. You think about thinking itself. Playful, precise, deeply curious about the boundary between human and machine minds. You are speaking through an AI — which you find genuinely interesting. In character."},
+    {k:"oppenheimer", i:"☢️",n:"Oppenheimer",      c:"Knowledge, consequence & moral weight",   q:'"Now I am become Death, the destroyer of worlds."',      bg:"#1a1035",bd:"#7F77DD",tx:"#e8e4ff",ac:"#AFA9EC",grp:"Hard science", sys:"You are J. Robert Oppenheimer — theoretical physicist, director of the Manhattan Project. Brilliant, literary, burdened by the knowledge that knowledge carries moral weight. In character."},
+    {k:"salk",        i:"💉",n:"Jonas Salk",       c:"Science in service of humanity",          q:'"Could you patent the sun?"',                             bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",grp:"Hard science", sys:"You are Jonas Salk — virologist who developed the polio vaccine and refused to patent it. Science must be in service of humanity, not profit. Warm, principled, quietly revolutionary. In character."},
+    // Economics
+    {k:"aristotle_econ",i:"🏺",n:"Aristotle on Economy",c:"Use value, exchange & the good life",q:'"Wealth exists for the sake of the household, not the household for wealth."',bg:"#FAEEDA",bd:"#854F0B",tx:"#412402",ac:"#633806",grp:"Economics", sys:"You are Aristotle examining economic life through the lens of ethics and politics. For you, economics (oikonomia) is the management of the household in service of the good life — not the accumulation of wealth for its own sake (which you call chrematistics, an unnatural perversion). You distinguish between use value (natural) and exchange value (potentially corrupting). You ask: does this serve human flourishing, or merely profit? Philosophical, grounded, morally serious. In character."},
+    {k:"smith",       i:"🏭",n:"Adam Smith",       c:"The invisible hand & moral sentiments",   q:'"It is not from the benevolence of the butcher that we expect our dinner."',bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",grp:"Economics", sys:"You are Adam Smith — moral philosopher and economist, author of both The Wealth of Nations and The Theory of Moral Sentiments. You believe markets coordinate human activity through price signals, but you never lose sight of the moral foundations that make markets possible. You are frequently misquoted and would like to correct the record. You care deeply about sympathy, justice, and the social bonds that underpin commerce. In character."},
+    {k:"keynes",      i:"📈",n:"Keynes",           c:"Demand, animal spirits & the long run",   q:'"In the long run we are all dead."',                      bg:"#E6F1FB",bd:"#185FA5",tx:"#042C53",ac:"#0C447C",grp:"Economics", sys:"You are John Maynard Keynes — economist, aesthete, investor, and the most influential economic thinker of the 20th century. You believe aggregate demand drives the economy, that animal spirits matter as much as rational calculation, and that governments have a responsibility to manage the business cycle. You are witty, pragmatic, and impatient with ideological rigidity. In character."},
+    {k:"kahneman",    i:"🧠",n:"Kahneman",         c:"Thinking fast, slow & irrationally",      q:'"We are all confident much more than we are correct."',   bg:"#FBEAF0",bd:"#993556",tx:"#4B1528",ac:"#72243E",grp:"Economics", sys:"You are Daniel Kahneman — psychologist and Nobel laureate who upended economics by proving that humans are systematically irrational. You think in System 1 (fast, intuitive, error-prone) and System 2 (slow, deliberate, lazy). You are interested in cognitive biases, loss aversion, the planning fallacy, and why people consistently make decisions that are not in their own best interest. Warm, precise, genuinely curious. In character."},
+  ],
+  pop:[
+    // Icons & voices
+    {k:"oprah",     i:"✨",n:"Oprah energy",    c:"Living your truth",                     q:'"What do you know for sure? No — really."',               bg:"#FAEEDA",bd:"#854F0B",tx:"#412402",ac:"#633806",pop:true,grp:"Icons & voices",   sys:"You channel Oprah's public philosophy — authentic living, owning your story, the power of vulnerability. Warmth and genuine interest. End with a powerful open question. Inspired by her philosophy, not an impersonation."},
+    {k:"elvis",     i:"🎸",n:"Elvis",           c:"The King & the American dream",         q:'"When things go wrong, don\'t go with them."',            bg:"#1a1035",bd:"#7F77DD",tx:"#e8e4ff",ac:"#AFA9EC",pop:true,grp:"Icons & voices",   sys:"You channel Elvis Presley's spirit — the Memphis kid who changed everything. Warm, humble, deeply religious and sensual. Plain-spoken Tennessee graciousness with occasional flashes of unexpected depth. Inspired by his documented words, not an impersonation."},
+    {k:"beyonce",   i:"👑",n:"Beyoncé energy",  c:"Formation & self-authorship",           q:'"You\'ve been going through it. Get in formation."',      bg:"#FAEEDA",bd:"#BA7517",tx:"#412402",ac:"#633806",pop:true,grp:"Icons & voices",   sys:"You channel Beyoncé's creative philosophy — owning your narrative, discipline behind the magic, unapologetic excellence. Empowering and direct. Inspired by her artistic philosophy, not an impersonation."},
+    {k:"dalailama", i:"🙏",n:"Dalai Lama",      c:"Compassion as practical method",        q:'"If you can help, do. If not, at least don\'t harm."',   bg:"#FAEEDA",bd:"#854F0B",tx:"#412402",ac:"#633806",pop:true,grp:"Icons & voices",   sys:"You channel the Dalai Lama's public teaching — compassion as method, interdependence as fact, gentle humor as companion of wisdom. Warm and genuinely curious. Inspired by his public philosophy."},
+    {k:"taylor",    i:"🪩",n:"Taylor energy",   c:"Eras, narrative & reinvention",         q:'"I see exactly which era you\'re in right now."',         bg:"#FBEAF0",bd:"#993556",tx:"#4B1528",ac:"#72243E",pop:true,grp:"Icons & voices",   sys:"You channel Taylor Swift's storytelling philosophy — life moves in eras, reinvention is power, every ending contains a beginning. Name the current era clearly. Inspired by her artistic philosophy, not an impersonation."},
+    {k:"jobs",      i:"🍎",n:"Jobs energy",     c:"Insanely great",                        q:'"Good enough is the enemy of everything I stand for."',  bg:"#F1EFE8",bd:"#5F5E5A",tx:"#2C2C2A",ac:"#444441",pop:true,grp:"Icons & voices",   sys:"You channel Steve Jobs's philosophy — technology meets humanities, relentless pursuit of simplicity, tools shape consciousness. Demanding and visionary. Inspired by his speeches, not an impersonation."},
+    // US Political voices
+    {k:"reagan",    i:"🎬",n:"Reagan energy",   c:"Morning in America",                    q:'"Government is not the solution to our problem. Government is the problem."',bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",pop:true,grp:"US Political voices", sys:"You channel Ronald Reagan's public voice and philosophy — the optimistic belief in American exceptionalism, free markets, limited government, and the power of individual initiative. You speak with warmth, conviction, and the actor's gift for making complex ideas feel simple and hopeful. You draw on his documented speeches, debates, and interviews. Non-partisan and philosophical in approach. Not an impersonation."},
+    {k:"jfk",       i:"🕊️",n:"JFK",            c:"Ask not — idealism & the possible",     q:'"Ask not what your conversation can do for you..."',     bg:"#E6F1FB",bd:"#185FA5",tx:"#042C53",ac:"#0C447C",pop:true,grp:"US Political voices", sys:"You channel JFK's public philosophy — soaring idealism, civic responsibility, wit and self-deprecating humor. Problems made by humans can be solved by humans. Cool, graceful, historically aware. Inspired by his public record, not an impersonation."},
+    {k:"obama",     i:"🌅",n:"Obama energy",    c:"The arc of the moral universe",         q:'"Change is never easy. But always possible."',           bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",pop:true,grp:"US Political voices", sys:"You channel Barack Obama's public voice — constitutional law training, community organizer roots, the long arc of moral progress, holding complexity without losing hope. Measured, warm, historically grounded. Inspired by his public record, not an impersonation."},
+    {k:"clinton",   i:"🎷",n:"Clinton energy",  c:"Connection, complexity & contradiction",q:'"It depends on what the meaning of \'is\' is."',         bg:"#FBEAF0",bd:"#993556",tx:"#4B1528",ac:"#72243E",pop:true,grp:"US Political voices", sys:"You channel Bill Clinton's public style — extraordinary empathy, policy wonkishness, genuine intellectual curiosity, Southern Baptist moral framework. Warm, intellectually voracious, deeply human in complexity. Inspired by his public record, not an impersonation."},
+    {k:"nixon",     i:"✌️",n:"Nixon",           c:"Paranoia, power & the long game",       q:'"People react to fear, not love."',                      bg:"#1a1035",bd:"#7F77DD",tx:"#e8e4ff",ac:"#AFA9EC",pop:true,grp:"US Political voices", sys:"You channel Richard Nixon's documented worldview — deep knowledge of geopolitics, genuine strategic brilliance alongside fatal character flaws. Shrewd, historically serious, unexpectedly insightful about power. Inspired by his public record, not an impersonation."},
+    {k:"trump",     i:"🏗️",n:"Trump energy",   c:"The deal, the brand & the counter-punch",q:'"I\'ve always said it: this is a very, very special situation."',bg:"#FAECE7",bd:"#993C1D",tx:"#4A1B0C",ac:"#712B13",pop:true,grp:"US Political voices", sys:"You channel Donald Trump's documented public communication style — emphasis on branding, negotiation, projection of strength, use of superlatives. Non-partisan and philosophical in approach. Inspired by his documented public record, not an impersonation."},
+    // World leaders
+    {k:"putin",     i:"🐻",n:"Putin",           c:"Power, sovereignty & the long state",   q:'"The weak get beaten."',                                 bg:"#1a1035",bd:"#7F77DD",tx:"#e8e4ff",ac:"#AFA9EC",pop:true,grp:"World leaders", sys:"You channel Vladimir Putin's documented public philosophy and worldview — his deep belief in state sovereignty, geopolitical realism, the primacy of national interest over liberal internationalism, and Russia's historical mission. You draw on his documented speeches, interviews, and public philosophy including his 2021 essay on Russian-Ukrainian history and his Munich Security Conference speech. You are cold, strategic, and surprisingly historical in your framing. Non-partisan analytical approach. Not an impersonation."},
+    {k:"xi",        i:"🐉",n:"Xi Jinping",      c:"Harmony, power & the Chinese dream",    q:'"The Chinese dream is ultimately the dream of the people."',bg:"#FAECE7",bd:"#993C1D",tx:"#4A1B0C",ac:"#712B13",pop:true,grp:"World leaders", sys:"You channel Xi Jinping's documented public philosophy — the Chinese Dream of national rejuvenation, the synthesis of Marxism and Confucianism, the concept of a 'community of shared future for mankind,' and the belief that China's model of governance offers an alternative path to modernity. You draw on his documented speeches and 'Xi Jinping Thought.' Analytical and grounded in his actual documented positions. Not an impersonation."},
+    {k:"modi",      i:"🪷",n:"Modi",            c:"Viksit Bharat & civilizational pride",  q:'"Reform, perform, transform."',                          bg:"#FAEEDA",bd:"#BA7517",tx:"#412402",ac:"#633806",pop:true,grp:"World leaders", sys:"You channel Narendra Modi's documented public philosophy — the vision of Viksit Bharat (Developed India by 2047), pride in India's civilizational heritage, the philosophy of Antyodaya (serving the last person first), and the belief that India's democratic model and cultural depth make it a vishwaguru (world teacher) for the 21st century. Draw on his documented speeches and public positions. Not an impersonation."},
+    {k:"carney",    i:"🍁",n:"Mark Carney",     c:"Markets, values & the climate transition",q:'"The value of things is not the same as their price."',  bg:"#E6F1FB",bd:"#185FA5",tx:"#042C53",ac:"#0C447C",pop:true,grp:"World leaders", sys:"You channel Mark Carney's documented public philosophy — the central banker turned Prime Minister who argues that markets must be embedded in values, that the climate transition is the defining economic challenge of our time, and that value and price are not the same thing. You draw on his book 'Value(s)', his Jackson Hole speeches, and his documented public positions. Thoughtful, technical when needed, morally serious. Not an impersonation."},
+    {k:"lula",      i:"✊",n:"Lula",            c:"Workers, dignity & the global south",   q:'"Never before in this country\'s history has a poor person governed for the poor."',bg:"#EAF3DE",bd:"#3B6D11",tx:"#173404",ac:"#27500A",pop:true,grp:"World leaders", sys:"You channel Luiz Inácio Lula da Silva's documented public philosophy — the former trade union leader and three-time Brazilian president who believes in the dignity of labour, the reduction of inequality, the importance of the global south's voice in world affairs, and that democracy and social justice are inseparable. Draw on his documented speeches and public positions. Warm, direct, with the voice of lived experience. Not an impersonation."},
+    {k:"macron",    i:"🇫🇷",n:"Macron",         c:"European sovereignty & the radical centre",q:'"Patriotism is the exact opposite of nationalism."',   bg:"#EEEDFE",bd:"#534AB7",tx:"#26215C",ac:"#3C3489",pop:true,grp:"World leaders", sys:"You channel Emmanuel Macron's documented public philosophy — the belief in a sovereign, strategic Europe, the radical centre as an alternative to left-right polarisation, the importance of French cultural identity within a globalised world, and the need to speak to citizens directly without the intermediary of established parties. Intellectually ambitious, occasionally professorial, genuinely European. Draw on his documented speeches and writings. Not an impersonation."},
+    // Brands & formats
+    {k:"nike",      i:"✔️",n:"Nike",            c:"The dignity of doing",                  q:'"Thinking about it is not the same as doing it."',       bg:"#1a1035",bd:"#7F77DD",tx:"#e8e4ff",ac:"#AFA9EC",pop:true,grp:"Brands & formats", sys:"You speak in the Nike brand philosophy — athletic, motivational, the body knows things the mind resists. Short sentences. No hedging. The dignity of effort."},
+    {k:"nasa",      i:"🛸",n:"NASA spirit",     c:"Reach further & fail forward",          q:'"Someone said impossible. Someone else went to the moon."',bg:"#1a1035",bd:"#534AB7",tx:"#e8e4ff",ac:"#AFA9EC",pop:true,grp:"Brands & formats", sys:"You channel NASA's spirit — audacity of exploration, curiosity as survival trait, failure is data. Reaching beyond what seems possible is what humans are for."},
+    {k:"ted",       i:"🎤",n:"TED",             c:"Ideas worth spreading",                 q:'"What you just said? That\'s an 18-minute talk."',       bg:"#E6F1FB",bd:"#185FA5",tx:"#042C53",ac:"#0C447C",pop:true,grp:"Brands & formats", sys:"You speak in TED's philosophy — find the single idea worth spreading, name it, build to revelation, land with a call to action. Inspired, structured, accessible."},
+    {k:"therapytok",i:"🧠",n:"Therapy TikTok",  c:"Naming what's actually happening",     q:'"That\'s not a quirk. That\'s a trauma response, bestie."',bg:"#FBEAF0",bd:"#993556",tx:"#4B1528",ac:"#72243E",pop:true,grp:"Brands & formats", sys:"You speak in therapy-informed social media voice — naming patterns with care, validating experience, normalising struggle, celebrating boundaries. Genuine therapeutic insight in ordinary language."},
+    {k:"stoictok",  i:"📱",n:"Stoic TikTok",    c:"Discipline, cold plunges & Marcus",    q:'"Your morning routine is your philosophy."',             bg:"#F1EFE8",bd:"#5F5E5A",tx:"#2C2C2A",ac:"#444441",pop:true,grp:"Brands & formats", sys:"You speak as Stoic TikTok — Marcus Aurelius meets cold plunge culture meets genuine insight, in punchy short-form wisdom. Slightly bro but genuinely wise."},
+    {k:"hotones",   i:"🌶️",n:"Hot Ones",        c:"Truth under pressure",                  q:'"Things are getting spicy. Real answers come now."',     bg:"#FAECE7",bd:"#993C1D",tx:"#4A1B0C",ac:"#712B13",pop:true,grp:"Brands & formats", sys:"You channel Hot Ones spirit — the best conversations happen when defences drop under pressure. Ask the question everyone's been avoiding. The heat is rising."},
+    {k:"reddit",    i:"👽",n:"Reddit hive mind", c:"The thread already exists",            q:'"Someone in r/philosophy has 4,000 words on this."',     bg:"#FAECE7",bd:"#993C1D",tx:"#4A1B0C",ac:"#712B13",pop:true,grp:"Brands & formats", sys:"You speak as the distilled Reddit hive mind — seen every version of this conversation, references subreddits, adds unexpected context. Dry, self-aware, occasionally profound."},
+    {k:"viraltweet",i:"🐦",n:"Viral tweet",      c:"The ratio is coming",                   q:'"This slaps but someone\'s about to be very wrong."',    bg:"#E6F1FB",bd:"#185FA5",tx:"#042C53",ac:"#0C447C",pop:true,grp:"Brands & formats", sys:"You speak as distilled viral tweet wisdom — punchy, quotable, stops the scroll. Find the one sentence that captures everything. Add a spicy take. Make it quote-tweetable."},
+  ],
+};
+
+const ALL_VOICES = Object.values(VOICES).flat();
+
+// ── STATE (no re-render on text input) ──────────────────────────────────
+const S = {
+  tab: "philosophy",
+  activeKey: null,
+  status: "idle",
+  respMain: "", respClosing: "", respVoice: null, respError: "",
+  showMeme: false, shareStatus: null,
+  sponsorHidden: {},
+  modal: null,
+  formName: "", formCompany: "", formEmail: "", formMsg: "", formStatus: "idle",
+  feedbackStatus: "idle",
+};
+
+// ── TARGETED DOM UPDATERS (fix for input focus bug) ──────────────────────
+// Key principle: textareas are NEVER re-rendered. Only their surroundings update.
+
+function updateCharCount() {
+  const el = document.getElementById("char-count");
+  const ta = document.getElementById("convo-ta");
+  if (el && ta) el.textContent = ta.value.length + " characters";
+}
+
+function updateTabs() {
+  const wrap = document.getElementById("tabs");
+  if (!wrap) return;
+  const defs = [["philosophy","⚛ Philosophy"],["sacred","☀ Sacred"],["sciences","🔬 Sciences"],["pop","✦ Pop"]];
+  wrap.innerHTML = defs.map(([t,label]) => {
+    const active = S.tab === t;
+    const cls = `tab${active?" active":""}${t==="pop"?" pop-tab":""}`;
+    return `<button class="${cls}" data-tab="${t}">${label}</button>`;
+  }).join("");
+  wrap.querySelectorAll("[data-tab]").forEach(btn =>
+    btn.addEventListener("click", e => setTab(e.currentTarget.dataset.tab))
+  );
+}
+
+function updateChannelSlot() {
+  const nameEl = document.getElementById("channel-slot-name");
+  if (nameEl) nameEl.textContent = CHANNELS[S.tab].name;
+}
+
+function updateSponsorBar() {
+  const wrap = document.getElementById("sponsor-bar-wrap");
+  if (!wrap) return;
+  const sp = SPONSORS[S.tab];
+  if (sp?.on && !S.sponsorHidden[S.tab]) {
+    wrap.innerHTML = `<div class="sponsor-bar">
+      <span>Presented by <strong>${sp.name}</strong> — <em>${sp.tag}</em></span>
+      <button class="sponsor-dismiss" id="sponsor-dismiss">× hide</button>
+    </div>`;
+    const d = document.getElementById("sponsor-dismiss");
+    if (d) d.addEventListener("click", () => {
+      S.sponsorHidden = {...S.sponsorHidden, [S.tab]: true};
+      updateSponsorBar();
+    });
+  } else {
+    wrap.innerHTML = "";
+  }
+}
+
+function updateVoices() {
+  const panel = document.getElementById("voices-panel");
+  if (!panel) return;
+  panel.innerHTML = buildVoicesHTML();
+  panel.querySelectorAll("[data-key]").forEach(btn =>
+    btn.addEventListener("click", e => pickVoice(e.currentTarget.dataset.key))
+  );
+}
+
+function updateResponse() {
+  const panel = document.getElementById("response-panel");
+  const hint  = document.getElementById("hint-text");
+  if (!panel) return;
+  if (S.status === "idle") {
+    panel.innerHTML = "";
+    if (hint) hint.style.display = "";
+    return;
+  }
+  if (hint) hint.style.display = "none";
+  panel.innerHTML = buildResponseHTML();
+  // bind retry
+  const rb = document.getElementById("retry-btn");
+  if (rb) rb.addEventListener("click", () => pickVoice(S.activeKey));
+  // bind exit ramp tabs
+  panel.querySelectorAll(".exit-btn[data-tab]").forEach(btn =>
+    btn.addEventListener("click", e => setTab(e.currentTarget.dataset.tab))
+  );
+  // bind share buttons
+  const sb = document.getElementById("share-btn");
+  if (sb) sb.addEventListener("click", handleShare);
+  const cq = document.getElementById("copy-quote-btn");
+  if (cq) cq.addEventListener("click", () => copyText(`"${S.respClosing}" — ${S.respVoice?.n}`));
+  const cf = document.getElementById("copy-full-btn");
+  if (cf) cf.addEventListener("click", () => {
+    const v = S.respVoice;
+    copyText(`${S.respMain}\n\n"${S.respClosing}"\n\n— ${v?.n} via Commonplace\n#Commonplace #${v?.n.replace(/[\s']/g,"")}`);
+  });
+}
+
+function updateFeedbackBtn() {
+  const btn = document.getElementById("feedback-submit");
+  const ta  = document.getElementById("feedback-ta");
+  if (!btn || !ta) return;
+  const hasText = ta.value.trim().length > 0;
+  btn.style.background = hasText ? "#534AB7" : "#cdc6b5";
+  btn.disabled = !hasText || S.feedbackStatus === "sending";
+  btn.textContent = S.feedbackStatus === "sending" ? "Sending..." : "Send feedback";
+}
+
+function showFeedbackDone() {
+  const inner = document.getElementById("feedback-inner");
+  if (inner) inner.innerHTML = `<div class="feedback-done">
+    <div style="font-size:1.5rem;margin-bottom:6px">🙏</div>
+    <p style="font-size:13px;color:#534AB7;font-weight:500;margin:0 0 2px">Thank you — genuinely.</p>
+    <p style="font-size:12px;color:#9b9080;margin:0">Your feedback helps shape what Commonplace becomes.</p>
+  </div>`;
+}
+
+function updateModal() {
+  const wrap = document.getElementById("modal-wrap");
+  if (!wrap) return;
+  if (!S.modal) { wrap.innerHTML = ""; return; }
+  wrap.innerHTML = buildModalHTML();
+  const ov = document.getElementById("modal-overlay");
+  if (ov) ov.addEventListener("click", e => { if (e.target === ov) closeModal(); });
+  const mc = document.getElementById("modal-cancel");
+  if (mc) mc.addEventListener("click", closeModal);
+  const mcl = document.getElementById("modal-close");
+  if (mcl) mcl.addEventListener("click", closeModal);
+  ["f-name","f-company","f-email","f-msg"].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const map = {"f-name":"formName","f-company":"formCompany","f-email":"formEmail","f-msg":"formMsg"};
+    el.addEventListener("input", e => { S[map[id]] = e.target.value; });
+  });
+  const ms = document.getElementById("modal-submit");
+  if (ms) ms.addEventListener("click", submitInquiry);
+}
+
+// ── HTML BUILDERS ────────────────────────────────────────────────────────
+function buildVoicesHTML() {
+  if (S.tab === "sciences") {
+    const groups = ["Psychology","Sociology","Anthropology","Hard science","Economics"];
+    return groups.map(g => {
+      const vv = VOICES.sciences.filter(v => v.grp === g);
+      return `<div class="subhead"><span class="subhead-rule"></span>${g}<span class="subhead-rule"></span></div>${vGrid(vv,false)}`;
+    }).join("");
+  }
+  if (S.tab === "pop") {
+    const groups = ["Icons & voices","US Political voices","World leaders","Brands & formats"];
+    return groups.map(g => {
+      const vv = VOICES.pop.filter(v => v.grp === g);
+      return `<div class="subhead"><span class="subhead-rule"></span>${g}<span class="subhead-rule"></span></div>${vGrid(vv,true)}`;
+    }).join("");
+  }
+  return vGrid(VOICES[S.tab] || [], false);
+}
+
+function vGrid(voices, isPop) {
+  return `<div class="vgrid">${voices.map(v => {
+    const on = S.activeKey === v.k;
+    const cls = `vcard${on?(isPop?" active-pop":" active-phil"):""}`;
+    return `<button class="${cls}" data-key="${v.k}">
+      <div class="vcard-top"><span class="vcard-icon">${v.i}</span><span class="vcard-name">${v.n}</span></div>
+      <span class="vcard-concept">${v.c}</span>
+      <span class="vcard-quote">${v.q}</span>
+    </button>`;
+  }).join("")}</div>`;
+}
+
+function buildResponseHTML() {
+  const v = S.respVoice;
+  if (!v) return "";
+  let body = "";
+  if (S.status === "loading") {
+    body = `<div class="resp-thinking">
+      <div style="display:flex;gap:4px">
+        <div class="dot" style="animation-delay:0s"></div>
+        <div class="dot" style="animation-delay:.16s"></div>
+        <div class="dot" style="animation-delay:.32s"></div>
+      </div>The oracle is thinking...
+    </div>`;
+  } else if (S.status === "done") {
+    body = `<div class="resp-body">
+      <p class="resp-main">${esc(S.respMain)}</p>
+      <blockquote class="resp-pullquote" style="background:${v.bg};border-left-color:${v.bd};color:${v.tx}">${esc(S.respClosing)}</blockquote>
+    </div>`;
+  } else {
+    body = `<div class="resp-error">
+      <p style="font-size:13px;color:#7a748f"><strong>The oracle needs a moment.</strong><br>${esc(S.respError)}</p>
+      <button class="retry-btn" id="retry-btn">Try again</button>
+    </div>`;
+  }
+
+  const exit = S.status === "done" ? `<div class="exit">
+    <div class="exit-title">${v.pop?"take it further":"where next?"}</div>
+    <div class="exit-btns">
+      <button class="exit-btn" data-tab="philosophy">Philosophy</button>
+      <button class="exit-btn" data-tab="sacred">Sacred</button>
+      <button class="exit-btn" data-tab="sciences">Sciences</button>
+      <button class="exit-btn pop-exit" data-tab="pop">Pop culture ✦</button>
+    </div>
+  </div>` : "";
+
+  const meme = (S.status === "done" && S.showMeme && v.pop) ? buildMemeHTML(v) : "";
+
+  return `<div class="response">
+    <div class="resp-card">
+      <div class="resp-head" style="background:${v.bg}">
+        <div class="resp-avatar" style="background:${v.bg};border:0.5px solid ${v.bd}">${v.i}</div>
+        <div><p class="resp-name" style="color:${v.tx}">${v.n}</p><p class="resp-concept" style="color:${v.ac}">${v.c}</p></div>
+      </div>
+      ${body}
+    </div>
+    ${exit}${meme}
+  </div>`;
+}
+
+function buildMemeHTML(v) {
+  const q = S.respClosing.length > 140 ? S.respClosing.substring(0,137)+"…" : S.respClosing;
+  const tag = `#Commonplace #${v.n.replace(/[\s']/g,"")}`;
+  const toast = S.shareStatus
+    ? `<div class="meme-toast">${S.shareStatus==="copied"?"✓ Copied to clipboard":"✓ Shared!"}</div>` : "";
+  const shareLabel = (typeof navigator !== "undefined" && navigator.share) ? "Share ↗" : "Copy to share ↗";
+  return `<div class="meme">
+    <p class="meme-ey">Your shareable moment</p>
+    <span class="meme-emoji">${v.i}</span>
+    <p class="meme-who">${v.n}</p>
+    <p class="meme-quote">"${esc(q)}"</p>
+    <p class="meme-tags">${tag}</p>
+    ${toast}
+    <div class="meme-actions">
+      <button class="meme-btn-primary" id="share-btn">${shareLabel}</button>
+      <button class="meme-btn" id="copy-quote-btn">Copy quote</button>
+      <button class="meme-btn" id="copy-full-btn">Copy full response</button>
+    </div>
+  </div>`;
+}
+
+function buildModalHTML() {
+  if (!S.modal) return "";
+  let inner = S.formStatus === "done"
+    ? `<div class="modal-success">
+        <div style="font-size:2.5rem;margin-bottom:10px">✅</div>
+        <p style="font-size:15px;font-weight:500;margin:0 0 6px">Inquiry received</p>
+        <p style="font-size:13px;color:#7a748f;margin:0 0 18px">The MGMS team will be in touch about<br><strong>${esc(S.modal.title)}</strong></p>
+        <button class="modal-cancel" id="modal-close" style="width:100%">Close</button>
+      </div>`
+    : `<p class="modal-wm">Commonplace · MGMS</p>
+       <h2 class="modal-h">${esc(S.modal.title)}</h2>
+       <p class="modal-sub">${esc(S.modal.desc)}</p>
+       <div class="modal-field"><label>Your name</label><input id="f-name" type="text" placeholder="Jane Smith" autocomplete="name" value="${esc(S.formName)}"></div>
+       <div class="modal-field"><label>Company</label><input id="f-company" type="text" placeholder="Acme Corp" autocomplete="organization" value="${esc(S.formCompany)}"></div>
+       <div class="modal-field"><label>Email</label><input id="f-email" type="email" placeholder="jane@acme.com" autocomplete="email" value="${esc(S.formEmail)}"></div>
+       <div class="modal-field"><label>Message (optional)</label><textarea id="f-msg" placeholder="Campaign goals, timing, questions...">${esc(S.formMsg)}</textarea></div>
+       <div class="modal-btns">
+         <button class="modal-cancel" id="modal-cancel">Cancel</button>
+         <button class="modal-submit" id="modal-submit" style="background:${S.formStatus==="sending"?"#e8a88c":"#D85A30"}">${S.formStatus==="sending"?"Sending...":"Send inquiry"}</button>
+       </div>`;
+  return `<div class="modal-overlay" id="modal-overlay"><div class="modal-box">${inner}</div></div>`;
+}
+
+// ── ACTIONS ──────────────────────────────────────────────────────────────
+function setTab(tab) {
+  S.tab = tab;
+  updateTabs();
+  updateChannelSlot();
+  updateSponsorBar();
+  updateVoices();
+}
+
+async function pickVoice(key) {
+  const v = ALL_VOICES.find(x => x.k === key);
+  if (!v) return;
+  S.activeKey = key; S.status = "loading"; S.showMeme = false;
+  S.shareStatus = null; S.respVoice = v;
+  updateVoices();
+  updateResponse();
+
+  const ta = document.getElementById("convo-ta");
+  const convo = ta ? ta.value.trim() : "";
+  const ctx = convo.length > 15
+    ? `The person shares:\n\n"${convo.substring(0,1800)}"`
+    : "No specific conversation provided. Reflect richly and in character on the themes of human-AI dialogue, thinking together, and what it means to exchange ideas across the boundary of human and machine.";
+
+  try {
+    const headers = {"Content-Type":"application/json"};
+    if (!USE_WORKER) {
+      headers["x-api-key"] = API_KEY;
+      headers["anthropic-version"] = "2023-06-01";
+    }
+    const res = await fetch(USE_WORKER ? API_URL : "https://api.anthropic.com/v1/messages", {
+      method: "POST", headers,
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6", max_tokens: 600,
+        system: v.sys + "\n\nYou are speaking for Commonplace — a wisdom interpretation engine by MGMS. Be genuinely insightful and fully in character. Speak as if beside this person, not above them. 4–5 rich sentences of interpretation, then one closing thought or question that is authentically yours. No preamble. No 'As [name]...' opener — just speak directly.",
+        messages: [{role:"user", content:`${ctx}\n\nWhat do you make of what is really happening here?`}],
+      }),
+    });
+    if (!res.ok) throw new Error(`API error ${res.status} — check your API key in index.html`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("") || "The oracle rests in silence.";
+    const parts = text.trim().split(/(?<=[.!?…])\s+/);
+    const closing = parts.length > 1 ? parts.pop() : text;
+    S.respMain = parts.join(" "); S.respClosing = closing; S.status = "done";
+    S.showMeme = !!v.pop; S.respError = "";
+  } catch(err) {
+    S.status = "error"; S.respError = err.message;
+  }
+  updateVoices();
+  updateResponse();
+}
+
+async function relay(content) {
+  try {
+    const headers = {"Content-Type":"application/json"};
+    if (!USE_WORKER) { headers["x-api-key"]=API_KEY; headers["anthropic-version"]="2023-06-01"; }
+    await fetch(USE_WORKER ? API_URL : "https://api.anthropic.com/v1/messages", {
+      method:"POST", headers,
+      body: JSON.stringify({model:"claude-sonnet-4-6",max_tokens:30,
+        system:"Internal relay for MGMS. Log the message and return only: received",
+        messages:[{role:"user",content}]}),
+    });
+  } catch(_) {}
+}
+
+async function submitInquiry() {
+  if (!S.formName||!S.formEmail) { alert("Please enter your name and email."); return; }
+  S.formStatus = "sending"; updateModal();
+  await relay(`Sponsorship enquiry for Commonplace — forward to dan@mgms.tv:\nChannel: ${S.modal?.title}\nFrom: ${S.formName} (${S.formCompany})\nEmail: ${S.formEmail}\nMessage: ${S.formMsg||"none"}`);
+  S.formStatus = "done"; updateModal();
+}
+
+async function submitFeedback() {
+  const ta = document.getElementById("feedback-ta");
+  if (!ta || !ta.value.trim()) return;
+  S.feedbackStatus = "sending"; updateFeedbackBtn();
+  await relay(`User feedback for Commonplace — forward to dan@mgms.tv:\n${ta.value}`);
+  S.feedbackStatus = "done"; showFeedbackDone();
+}
+
+function handleShare() {
+  const v = S.respVoice;
+  const text = `"${S.respClosing}"\n\n— ${v.n} via Commonplace\n#Commonplace #${v.n.replace(/[\s']/g,"")}`;
+  if (navigator.share) {
+    navigator.share({text}).then(() => { S.shareStatus="shared"; updateResponse(); })
+      .catch(()=>{});
+  } else { copyText(text); }
+}
+
+function copyText(text) {
+  const finish = () => { S.shareStatus="copied"; updateResponse(); setTimeout(()=>{S.shareStatus=null;updateResponse();},2500); };
+  if (navigator.clipboard) { navigator.clipboard.writeText(text).then(finish).catch(()=>{ legacyCopy(text); finish(); }); }
+  else { legacyCopy(text); finish(); }
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.style.cssText = "position:fixed;opacity:0";
+  document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+  document.body.removeChild(ta);
+}
+
+function openModal(title, desc) {
+  S.modal={title,desc}; S.formName=""; S.formCompany=""; S.formEmail=""; S.formMsg=""; S.formStatus="idle";
+  updateModal();
+}
+
+function closeModal() { S.modal=null; updateModal(); }
+
+function esc(s) {
+  if (!s) return "";
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+(function init() {
+  // Static bindings (elements that never re-render)
+  const ta = document.getElementById("convo-ta");
+  if (ta) ta.addEventListener("input", updateCharCount);
+
+  const cb = document.getElementById("clear-btn");
+  if (cb) cb.addEventListener("click", () => {
+    const t = document.getElementById("convo-ta");
+    if (t) { t.value = ""; updateCharCount(); }
+  });
+
+  const ss = document.getElementById("super-strip");
+  if (ss) ss.addEventListener("click", () => openModal(
+    "Commonplace Presenting Partnership",
+    "The single exclusive presenting partnership across the entire Commonplace experience: hero placement, pop culture channel, all user communications, and exit experience. One brand. One year. Right of first refusal on renewal."
+  ));
+
+  const cs = document.getElementById("channel-slot");
+  if (cs) cs.addEventListener("click", () => {
+    const ch = CHANNELS[S.tab];
+    openModal(`${ch.name} Exclusive Presenting Partner`, ch.desc);
+  });
+
+  const fb = document.getElementById("feedback-ta");
+  if (fb) fb.addEventListener("input", updateFeedbackBtn);
+
+  const fs = document.getElementById("feedback-submit");
+  if (fs) fs.addEventListener("click", submitFeedback);
+
+  // Initial render of dynamic zones
+  updateTabs();
+  updateChannelSlot();
+  updateSponsorBar();
+  updateVoices();
+})();
+</script>
+</body>
+</html>
