@@ -685,13 +685,11 @@ async function pickVoice(key) {
 
 async function relay(content) {
   try {
-    const headers = {"Content-Type":"application/json"};
-    if (!USE_WORKER) { headers["x-api-key"]=API_KEY; headers["anthropic-version"]="2023-06-01"; headers["anthropic-dangerous-direct-browser-access"]="true"; }
-    await fetch(USE_WORKER ? API_URL : "https://api.anthropic.com/v1/messages", {
-      method:"POST", headers,
-      body: JSON.stringify({model:"claude-sonnet-4-6",max_tokens:30,
-        system:"Internal relay for MGMS. Log the message and return only: received",
-        messages:[{role:"user",content}]}),
+    const subject = content.split("\n")[0].replace(/^[A-Za-z ]+—\s*/,"").substring(0,80);
+    await fetch(API_URL + "/relay", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ subject: "Commonplace — " + subject, body: content }),
     });
   } catch(_) {}
 }

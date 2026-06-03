@@ -14,7 +14,21 @@ export default {
       return new Response("Method not allowed", { status: 405 });
     }
 
+    const url = new URL(request.url);
     const body = await request.text();
+
+    if (url.pathname === "/relay") {
+      const res = await fetch(env.SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+      const data = await res.text();
+      return new Response(data, {
+        status: res.status,
+        headers: { ...cors, "Content-Type": "application/json" },
+      });
+    }
 
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -29,10 +43,7 @@ export default {
     const data = await res.text();
     return new Response(data, {
       status: res.status,
-      headers: {
-        ...cors,
-        "Content-Type": "application/json",
-      },
+      headers: { ...cors, "Content-Type": "application/json" },
     });
   },
 };
