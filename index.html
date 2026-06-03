@@ -253,9 +253,9 @@ body{font-family:'DM Sans',sans-serif;background:#f7f5f0;min-height:100vh}
 // Worker endpoint (e.g. https://commonplace.yourname.workers.dev)
 // and remove the API_KEY constant entirely.
 // For direct demo use, paste your Anthropic key below:
-const API_KEY    = "PASTE_YOUR_API_KEY_HERE";
-const API_URL    = "https://api.anthropic.com/v1/messages"; // swap for CF Worker URL
-const USE_WORKER = false; // set true when using Cloudflare Worker
+const API_KEY    = "";
+const API_URL    = "https://commonplace-proxy.doscherer.workers.dev";
+const USE_WORKER = true;
 
 // ── CHANNEL CONFIG ───────────────────────────────────────────────────────
 const CHANNELS = {
@@ -658,6 +658,7 @@ async function pickVoice(key) {
     if (!USE_WORKER) {
       headers["x-api-key"] = API_KEY;
       headers["anthropic-version"] = "2023-06-01";
+      headers["anthropic-dangerous-direct-browser-access"] = "true";
     }
     const res = await fetch(USE_WORKER ? API_URL : "https://api.anthropic.com/v1/messages", {
       method: "POST", headers,
@@ -685,7 +686,7 @@ async function pickVoice(key) {
 async function relay(content) {
   try {
     const headers = {"Content-Type":"application/json"};
-    if (!USE_WORKER) { headers["x-api-key"]=API_KEY; headers["anthropic-version"]="2023-06-01"; }
+    if (!USE_WORKER) { headers["x-api-key"]=API_KEY; headers["anthropic-version"]="2023-06-01"; headers["anthropic-dangerous-direct-browser-access"]="true"; }
     await fetch(USE_WORKER ? API_URL : "https://api.anthropic.com/v1/messages", {
       method:"POST", headers,
       body: JSON.stringify({model:"claude-sonnet-4-6",max_tokens:30,
